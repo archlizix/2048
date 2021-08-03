@@ -11,7 +11,6 @@ indent=force-tab=4
 attach-closing-while
 
 # Indentation Options
-indent-modifiers
 indent-preproc-block
 indent-preproc-define
 indent-preproc-cond
