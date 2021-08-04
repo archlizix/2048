@@ -39,6 +39,11 @@ public:
 		if (ch >= 'a' && ch <= 'z') {
 			ch -= 32;
 		}
+		if (status == S_NORMAL) {
+			if (ch == 'A') {
+				moveLeft();
+			}
+		}
 		if (ch == 'Q') {
 			status = S_QUIT;
 		} else if (ch == 'R') {
@@ -97,6 +102,38 @@ public:
 private:
 	int data[N][N];
 	int status;
+	// 向左边移动
+	void moveLeft()
+	{
+		for (int i = 0; i < N; ++i) {
+			// 逐行处理
+			// 如果两个数字一样，当前可写入的位置
+			int currentWritePos = 0;
+			int lastValue = 0;
+			for (int j = 0; j < N; ++j) {
+				if (data[i][j] == 0) {
+					continue;
+				}
+				if (lastValue == 0) {
+					lastValue = data[i][j];
+				} else {
+					if (lastValue == data[i][j]) {
+						data[i][currentWritePos] = lastValue * 2;
+						lastValue = 0;
+					} else {
+						data[i][currentWritePos] = lastValue;
+						lastValue = data[i][j];
+					}
+					++currentWritePos;
+				}
+				data[i][j] = 0;
+			}
+			if (lastValue != 0) {
+				data[i][currentWritePos] = lastValue;
+			}
+		}
+	}
+
 	// 重新开始
 	void restart()
 	{
@@ -112,8 +149,7 @@ private:
 	// 随机产生一个新的数字
 	bool randNew()
 	{
-		vector<int>
-		emptyPos;
+		vector<int>emptyPos;
 		// 把空位置先存起来
 		for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
