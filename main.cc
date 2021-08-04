@@ -8,11 +8,11 @@
 using namespace std;
 
 // 格子数
-#define N 4
+const int N = 4;
 // 每个格子的字符长度
-#define WIDTH 5
+const int WIDTH = 5;
 // 胜利条件
-#define TARGET 2048
+const int TARGET = 2048;
 
 // 游戏状态
 #define S_FAIL 0
@@ -127,6 +127,7 @@ public:
 private:
 	int data[N][N];
 	int status;
+
 	// 向左边移动, 返回值表示盘面是否有发生变化
 	bool moveLeft()
 	{
@@ -147,6 +148,9 @@ private:
 					if (lastValue == data[i][j]) {
 						data[i][currentWritePos] = lastValue * 2;
 						lastValue = 0;
+						if (data[i][currentWritePos] == TARGET) {
+							status = S_WIN;
+						}
 					} else {
 						data[i][currentWritePos] = lastValue;
 						lastValue = data[i][j];
