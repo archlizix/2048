@@ -40,17 +40,35 @@ public:
 			ch -= 32;
 		}
 		if (status == S_NORMAL) {
+			bool updated = false;
 			if (ch == 'A') {
-				moveLeft();
+				updated = moveLeft();
+			} else if (ch == 'S') {
+				// 向下移动 = 旋转270度，向左移动，再旋转90度
+				rotate();
+				rotate();
+				rotate();
+				updated = moveLeft();
+				rotate();
+			} else if (ch == 'D') {
+				rotate();
+				rotate();
+				updated = moveLeft();
+				rotate();
+				rotate();
+			} else if (ch == 'W') {
+				rotate();
+				updated = moveLeft();
+				rotate();
+				rotate();
+				rotate();
+			} if (updated) {
+				randNew();
 			}
-		}
-		if (ch == 'Q') {
+		} if (ch == 'Q') {
 			status = S_QUIT;
 		} else if (ch == 'R') {
 			restart();
-		} else {
-			// 在各种状态中间遍历，测试界面
-			status = (status + 1) % 3;
 		}
 	}
 
@@ -102,15 +120,17 @@ public:
 private:
 	int data[N][N];
 	int status;
-	// 向左边移动
-	void moveLeft()
+	// 向左边移动, 返回值表示盘面是否有发生变化
+	bool moveLeft()
 	{
+		int tmp[N][N];
 		for (int i = 0; i < N; ++i) {
 			// 逐行处理
 			// 如果两个数字一样，当前可写入的位置
 			int currentWritePos = 0;
 			int lastValue = 0;
 			for (int j = 0; j < N; ++j) {
+				tmp[i][j] = data[i][j];
 				if (data[i][j] == 0) {
 					continue;
 				}
@@ -132,6 +152,31 @@ private:
 				data[i][currentWritePos] = lastValue;
 			}
 		}
+		// 看看是否发生了变化
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < N; ++j) {
+				if (data[i][j] != tmp[i][j]) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	// 矩阵逆时针旋转90度
+	void rotate()
+	{
+		int tmp[N][N] = {0};
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < N; ++j) {
+				tmp[i][j] = data[j][N - 1 - i];
+			}
+		}
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < N; ++j) {
+				data[i][j] = tmp[i][j];
+			}
+		}
 	}
 
 	// 重新开始
@@ -146,6 +191,7 @@ private:
 		randNew();
 		status = S_NORMAL;
 	}
+
 	// 随机产生一个新的数字
 	bool randNew()
 	{
