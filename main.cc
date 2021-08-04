@@ -15,15 +15,17 @@ const int WIDTH = 5;
 const int TARGET = 2048;
 
 // 游戏状态
-#define S_FAIL 0
-#define S_WIN 1
-#define S_NORMAL 2
-#define S_QUIT 3
+enum {
+	s_fail = 0,
+	s_win,
+	s_normal,
+	s_quit,
+};
 
 class Game2048
 {
 public:
-	Game2048(): status(S_NORMAL)
+	Game2048(): status(s_normal)
 	{
 		setTestData();
 	}
@@ -41,7 +43,7 @@ public:
 		if (ch >= 'a' && ch <= 'z') {
 			ch -= 32;
 		}
-		if (status == S_NORMAL) {
+		if (status == s_normal) {
 			bool updated = false;
 			if (ch == 'A') {
 				updated = moveLeft();
@@ -68,12 +70,12 @@ public:
 			if (updated) {
 				randNew();
 				if (isOver()) {
-					status = S_FAIL;
+					status = s_fail;
 				}
 			}
 		}
 		if (ch == 'Q') {
-			status = S_QUIT;
+			status = s_quit;
 		} else if (ch == 'R') {
 			restart();
 		}
@@ -108,9 +110,9 @@ public:
 		mvprintw(2 * N + 2, (5 * (N - 4) - 1) / 2, "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
 		mvprintw(2 * N + 3, 12 + 5 * (N - 4) / 2, "archlizix");
 
-		if (status == S_WIN) {
+		if (status == s_win) {
 			mvprintw(N, 5 * N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
-		} else if (status == S_FAIL) {
+		} else if (status == s_fail) {
 			mvprintw(N, 5 * N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
 		}
 	}
@@ -149,7 +151,7 @@ private:
 						data[i][currentWritePos] = lastValue * 2;
 						lastValue = 0;
 						if (data[i][currentWritePos] == TARGET) {
-							status = S_WIN;
+							status = s_win;
 						}
 					} else {
 						data[i][currentWritePos] = lastValue;
@@ -217,7 +219,7 @@ private:
 		}
 		randNew();
 		randNew();
-		status = S_NORMAL;
+		status = s_normal;
 	}
 
 	// 随机产生一个新的数字
@@ -288,7 +290,7 @@ int main()
 	do {
 		game.draw();
 		game.processInput();
-	} while (S_QUIT != game.getStatus());
+	} while (s_quit != game.getStatus());
 
 	shutdown();
 	return 0;
