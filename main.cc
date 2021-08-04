@@ -15,22 +15,22 @@ const int WIDTH = 5;
 const int TARGET = 2048;
 
 // 游戏状态
-enum {
-	s_fail = 0,
-	s_win,
-	s_normal,
-	s_quit,
+enum class game_status {
+	fail = 0,
+	win,
+	normal,
+	quit,
 };
 
 class Game2048
 {
 public:
-	Game2048(): status(s_normal)
+	Game2048(): status(game_status::normal)
 	{
 		setTestData();
 	}
 
-	int getStatus()
+	game_status getStatus()
 	{
 		return status;
 	}
@@ -43,7 +43,7 @@ public:
 		if (ch >= 'a' && ch <= 'z') {
 			ch -= 32;
 		}
-		if (status == s_normal) {
+		if (status == game_status::normal) {
 			bool updated = false;
 			if (ch == 'A') {
 				updated = moveLeft();
@@ -70,12 +70,12 @@ public:
 			if (updated) {
 				randNew();
 				if (isOver()) {
-					status = s_fail;
+					status = game_status::fail;
 				}
 			}
 		}
 		if (ch == 'Q') {
-			status = s_quit;
+			status = game_status::quit;
 		} else if (ch == 'R') {
 			restart();
 		}
@@ -110,9 +110,9 @@ public:
 		mvprintw(2 * N + 2, (5 * (N - 4) - 1) / 2, "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
 		mvprintw(2 * N + 3, 12 + 5 * (N - 4) / 2, "archlizix");
 
-		if (status == s_win) {
+		if (status == game_status::win) {
 			mvprintw(N, 5 * N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
-		} else if (status == s_fail) {
+		} else if (status == game_status::fail) {
 			mvprintw(N, 5 * N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
 		}
 	}
@@ -128,7 +128,7 @@ public:
 	}
 private:
 	int data[N][N];
-	int status;
+	game_status status;
 
 	// 向左边移动, 返回值表示盘面是否有发生变化
 	bool moveLeft()
@@ -151,7 +151,7 @@ private:
 						data[i][currentWritePos] = lastValue * 2;
 						lastValue = 0;
 						if (data[i][currentWritePos] == TARGET) {
-							status = s_win;
+							status = game_status::win;
 						}
 					} else {
 						data[i][currentWritePos] = lastValue;
@@ -219,7 +219,7 @@ private:
 		}
 		randNew();
 		randNew();
-		status = s_normal;
+		status = game_status::normal;
 	}
 
 	// 随机产生一个新的数字
@@ -290,7 +290,7 @@ int main()
 	do {
 		game.draw();
 		game.processInput();
-	} while (s_quit != game.getStatus());
+	} while (game_status::quit != game.getStatus());
 
 	shutdown();
 	return 0;
