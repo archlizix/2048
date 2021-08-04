@@ -1,1 +1,17 @@
 = 2048
+
+== 代码风格
+
+使用astyle管理代码风格，配置文件为Tools/astyle/astylerc。bash环境下参考命令：
+
+[source,bash]
+----
+$ astyle --options=./Tools/astyle/astylerc --recursive ./*.c,*.h
+----
+
+== 编译命令
+
+[source,bash]
+----
+g++ -lncurses main.cc       
+----
