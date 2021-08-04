@@ -12,13 +12,41 @@ using namespace std;
 // 每个格子的字符长度
 #define WIDTH 5
 
+// 游戏状态
+#define S_FAIL 0
+#define S_WIN 1
+#define S_NORMAL 2
+#define S_QUIT 3
+
 class Game2048
 {
 public:
-	Game2048()
+	Game2048(): status(S_NORMAL)
 	{
 		setTestData();
 	}
+
+	int getStatus()
+	{
+		return status;
+	}
+
+	// 处理按键
+	void processInput()
+	{
+		char ch = getch();
+		// 转化成大写
+		if (ch >= 'a' && ch <= 'z') {
+			ch -= 32;
+		}
+		if (ch == 'Q') {
+			status = S_QUIT;
+		} else {
+			// 在各种状态中间遍历，测试界面
+			status = (status + 1) % 3;
+		}
+	}
+
 	// 绘制游戏界面
 	void draw()
 	{
@@ -47,6 +75,12 @@ public:
 		// 提示文字
 		mvprintw(2 * N + 2, (5 * (N - 4) - 1) / 2, "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
 		mvprintw(2 * N + 3, 12 + 5 * (N - 4) / 2, "archlizix");
+
+		if (status == S_WIN) {
+			mvprintw(N, 5 * N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
+		} else if (status == S_FAIL) {
+			mvprintw(N, 5 * N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
+		}
 	}
 
 	// 方便调试, 随时设置数据
@@ -60,11 +94,13 @@ public:
 	}
 private:
 	int data[N][N];
+	int status;
 
 	// 左上角为（0，0），在指定的位置画一个字符
 	void drawItem(int row, int col, char c)
 	{
-		move(row, col);         addch(c);
+		move(row, col);
+		addch(c);
 	}
 
 	// 游戏里的数字是右对齐，row, col是数字最后一位所在的位置
@@ -103,12 +139,11 @@ int main()
 	initialize();
 
 	Game2048 game;
-	char ch = 'n';
 
 	do {
 		game.draw();
-		ch = getch();
-	} while (ch != 'Q' && ch != 'q');
+		game.processInput();
+	} while (S_QUIT != game.getStatus());
 
 	shutdown();
 	return 0;
