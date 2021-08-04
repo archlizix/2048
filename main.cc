@@ -11,6 +11,8 @@ using namespace std;
 #define N 4
 // 每个格子的字符长度
 #define WIDTH 5
+// 胜利条件
+#define TARGET 2048
 
 // 游戏状态
 #define S_FAIL 0
@@ -62,10 +64,15 @@ public:
 				rotate();
 				rotate();
 				rotate();
-			} if (updated) {
-				randNew();
 			}
-		} if (ch == 'Q') {
+			if (updated) {
+				randNew();
+				if (isOver()) {
+					status = S_FAIL;
+				}
+			}
+		}
+		if (ch == 'Q') {
 			status = S_QUIT;
 		} else if (ch == 'R') {
 			restart();
@@ -177,6 +184,23 @@ private:
 				data[i][j] = tmp[i][j];
 			}
 		}
+	}
+
+	// 判断游戏已经结束
+	bool isOver()
+	{
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < N; ++j) {
+				// 有空位或者相邻有一样的都可以继续
+				if ((j + 1 < N) && (data[i][j] * data[i][j + 1] == 0 || data[i][j] == data[i][j + 1])) {
+					return false;
+				}
+				if ((i + 1 < N) && (data[i][j] * data[i + 1][j] == 0 || data[i][j] == data[i + 1][j])) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// 重新开始
