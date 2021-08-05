@@ -13,5 +13,8 @@ $ astyle --options=./Tools/astyle/astylerc --recursive ./*.c,*.h
 
 [source,bash]
 ----
-$ g++ -lncurses main.cc       
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
 ----
