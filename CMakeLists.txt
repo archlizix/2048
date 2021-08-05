@@ -12,3 +12,5 @@ if(CURSES_FOUND)
 else(CURSES_FOUND)
     message(FATAL_ERROR "Curses library not found")
 endif(CURSES_FOUND)
+
+# https://cmake.org/cmake/help/latest/index.html
