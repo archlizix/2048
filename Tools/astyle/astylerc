@@ -33,3 +33,5 @@ suffix=none
 #exclude=####
 ignore-exclude-errors-x
 lineend=linux
+
+# http://astyle.sourceforge.net/astyle.html
