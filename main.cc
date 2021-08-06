@@ -8,11 +8,11 @@
 using namespace std;
 
 // 格子数
-const int N = 4;
+constexpr int N = 4;
 // 每个格子的字符长度
-const int WIDTH = 5;
+constexpr int WIDTH = 5;
 // 胜利条件
-const int TARGET = 2048;
+constexpr int TARGET = 2048;
 
 // 游戏状态
 enum class game_status {
