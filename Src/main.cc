@@ -5,15 +5,7 @@
 #include <ctime>
 #include <curses.h>
 
-// 格子数
-constexpr int N = 4;
-// 每个格子的字符长度
-constexpr int WIDTH = 5;
-// 胜利条件
-constexpr int TARGET = 2048;
-
-// 游戏状态
-enum class game_status {
+enum class GameStatus {
 	fail = 0,
 	win,
 	normal,
@@ -23,15 +15,18 @@ enum class game_status {
 class Game2048
 {
 public:
+	int Target = 2048;
+	static constexpr int N = 4; //格子数
+	static constexpr int WIDTH = 5; //每个格子的字符长度
 	Game2048();
 	~Game2048();
-	game_status getStatus();
+	GameStatus getStatus();
 	void processInput();
 	void draw();
 	void setTestData();
 private:
-	int data[N][N];
-	game_status status;
+	int data[Game2048::N][Game2048::N];
+	GameStatus status;
 	bool moveLeft();
 	void rotate();
 	bool isOver();
@@ -48,14 +43,13 @@ Game2048::Game2048()
 	noecho(); //按键不回显
 	curs_set(0); //隐藏光标
 	srand(time(NULL)); //随机数
-	this->status = game_status::normal;
+	this->status = GameStatus::normal;
 	setTestData();
 
 	system("clear");
 	mvprintw(LINES / 3, COLS / 3, "GAME BEGIN");
 	mvprintw(LINES / 3 + 1, COLS / 3, "Press any key to entry...");
 	refresh();
-
 	getch();
 }
 
@@ -71,7 +65,7 @@ Game2048::~Game2048()
 	endwin(); //ncurses清理
 }
 
-game_status Game2048::getStatus()
+GameStatus Game2048::getStatus()
 {
 	return status;
 }
@@ -82,7 +76,7 @@ void Game2048::processInput()
 	if (ch >= 'a' && ch <= 'z') {
 		ch -= 32;
 	}
-	if (status == game_status::normal) {
+	if (status == GameStatus::normal) {
 		bool updated = false;
 		if (ch == 'A') {
 			updated = moveLeft();
@@ -109,12 +103,12 @@ void Game2048::processInput()
 		if (updated) {
 			randNew();
 			if (isOver()) {
-				status = game_status::fail;
+				status = GameStatus::fail;
 			}
 		}
 	}
 	if (ch == 'Q') {
-		status = game_status::quit;
+		status = GameStatus::quit;
 	} else if (ch == 'R') {
 		restart();
 	}
@@ -126,39 +120,40 @@ void Game2048::draw()
 	clear();
 	// 居中偏移
 	const int offset = 12;
-	for (int i = 0; i <= N; ++i) {
-		for (int j = 0; j <= N; ++j) {
+	for (int i = 0; i <= Game2048::N; ++i) {
+		for (int j = 0; j <= Game2048::N; ++j) {
 			// 相交点
-			drawItem(i * 2, 1 + j * WIDTH + offset, '+');
+			drawItem(i * 2, 1 + j * Game2048::WIDTH + offset, '+');
 			// 竖线
-			if (i != N) {
-				drawItem(i * 2 + 1, 1 + j * WIDTH + offset, '|');
+			if (i != Game2048::N) {
+				drawItem(i * 2 + 1, 1 + j * Game2048::WIDTH + offset, '|');
 			}
 			// 横线
-			for (int k = 1; j != N && k < WIDTH; ++k) {
-				drawItem(i * 2, 1 + j * WIDTH + k + offset, '-');
+			for (int k = 1; j != Game2048::N && k < Game2048::WIDTH; ++k) {
+				drawItem(i * 2, 1 + j * Game2048::WIDTH + k + offset, '-');
 			}
 			// 每个格子里的数
-			if (i != N && j != N) {
-				drawNum(i * 2 + 1, (j + 1) * WIDTH + offset, data[i][j]);
+			if (i != Game2048::N && j != Game2048::N) {
+				drawNum(i * 2 + 1, (j + 1) * Game2048::WIDTH + offset, data[i][j]);
 			}
 		}
 	}
 	// 提示文字
-	mvprintw(2 * N + 2, (5 * (N - 4) - 1) / 2, "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
-	mvprintw(2 * N + 3, 12 + 5 * (N - 4) / 2, "archlizix");
+	mvprintw(2 * Game2048::N + 2, (5 * (Game2048::N - 4) - 1) / 2,
+			 "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
+	mvprintw(2 * Game2048::N + 3, 12 + 5 * (Game2048::N - 4) / 2, "archlizix");
 
-	if (status == game_status::win) {
-		mvprintw(N, 5 * N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
-	} else if (status == game_status::fail) {
-		mvprintw(N, 5 * N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
+	if (status == GameStatus::win) {
+		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
+	} else if (status == GameStatus::fail) {
+		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
 	}
 }
 
 void Game2048::setTestData()
 {
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			data[i][j] = 16 << i << j;
 		}
 	}
@@ -167,13 +162,13 @@ void Game2048::setTestData()
 // 向左边移动, 返回值表示盘面是否有发生变化
 bool Game2048::moveLeft()
 {
-	int tmp[N][N];
-	for (int i = 0; i < N; ++i) {
+	int tmp[Game2048::N][Game2048::N];
+	for (int i = 0; i < Game2048::N; ++i) {
 		// 逐行处理
 		// 如果两个数字一样，当前可写入的位置
 		int currentWritePos = 0;
 		int lastValue = 0;
-		for (int j = 0; j < N; ++j) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			tmp[i][j] = data[i][j];
 			if (data[i][j] == 0) {
 				continue;
@@ -184,8 +179,8 @@ bool Game2048::moveLeft()
 				if (lastValue == data[i][j]) {
 					data[i][currentWritePos] = lastValue * 2;
 					lastValue = 0;
-					if (data[i][currentWritePos] == TARGET) {
-						status = game_status::win;
+					if (data[i][currentWritePos] == this->Target) {
+						status = GameStatus::win;
 					}
 				} else {
 					data[i][currentWritePos] = lastValue;
@@ -200,8 +195,8 @@ bool Game2048::moveLeft()
 		}
 	}
 	// 看看是否发生了变化
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			if (data[i][j] != tmp[i][j]) {
 				return true;
 			}
@@ -213,14 +208,14 @@ bool Game2048::moveLeft()
 // 矩阵逆时针旋转90度
 void Game2048::rotate()
 {
-	int tmp[N][N] = {0};
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
-			tmp[i][j] = data[j][N - 1 - i];
+	int tmp[Game2048::N][Game2048::N] = {0};
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
+			tmp[i][j] = data[j][Game2048::N - 1 - i];
 		}
 	}
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			data[i][j] = tmp[i][j];
 		}
 	}
@@ -228,13 +223,13 @@ void Game2048::rotate()
 
 bool Game2048::isOver()
 {
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			// 有空位或者相邻有一样的都可以继续
-			if ((j + 1 < N) && (data[i][j] * data[i][j + 1] == 0 || data[i][j] == data[i][j + 1])) {
+			if ((j + 1 < Game2048::N) && (data[i][j] * data[i][j + 1] == 0 || data[i][j] == data[i][j + 1])) {
 				return false;
 			}
-			if ((i + 1 < N) && (data[i][j] * data[i + 1][j] == 0 || data[i][j] == data[i + 1][j])) {
+			if ((i + 1 < Game2048::N) && (data[i][j] * data[i + 1][j] == 0 || data[i][j] == data[i + 1][j])) {
 				return false;
 			}
 		}
@@ -244,24 +239,24 @@ bool Game2048::isOver()
 
 void Game2048::restart()
 {
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			data[i][j] = 0;
 		}
 	}
 	randNew();
 	randNew();
-	status = game_status::normal;
+	status = GameStatus::normal;
 }
 
 bool Game2048::randNew()
 {
 	std::vector<int>emptyPos;
 	// 把空位置先存起来
-	for (int i = 0; i < N; ++i) {
-		for (int j = 0; j < N; ++j) {
+	for (int i = 0; i < Game2048::N; ++i) {
+		for (int j = 0; j < Game2048::N; ++j) {
 			if (data[i][j] == 0) {
-				emptyPos.push_back(i * N + j);
+				emptyPos.push_back(i * Game2048::N + j);
 			}
 		}
 	}
@@ -271,7 +266,7 @@ bool Game2048::randNew()
 	// 随机找个空位置
 	int value = emptyPos[rand() % emptyPos.size()];
 	// 10%的概率产生4
-	data[value / N][value % N] = rand() % 10 == 1 ? 4 : 2;
+	data[value / Game2048::N][value % Game2048::N] = rand() % 10 == 1 ? 4 : 2;
 	return true;
 }
 
@@ -299,7 +294,7 @@ int main()
 	do {
 		game.draw();
 		game.processInput();
-	} while (game_status::quit != game.getStatus());
+	} while (GameStatus::quit != game.getStatus());
 
 	return 0;
 }
