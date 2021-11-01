@@ -38,16 +38,16 @@ Game2048::~Game2048()
 
 GameStatus Game2048::get_status()
 {
-	return status;
+	return this->status;
 }
 
 void Game2048::process_input()
 {
 	char ch = getch();
-	if (ch >= 'a' && ch <= 'z') {
+	if ('a' <= ch && ch <= 'z') {
 		ch -= 32;
 	}
-	if (status == GameStatus::Normal) {
+	if (this->status == GameStatus::Normal) {
 		bool updated = false;
 		if (ch == 'A') {
 			updated = move_left();
@@ -74,12 +74,12 @@ void Game2048::process_input()
 		if (updated) {
 			rand_new();
 			if (is_over()) {
-				status = GameStatus::Fail;
+				this->status = GameStatus::Fail;
 			}
 		}
 	}
 	if (ch == 'Q') {
-		status = GameStatus::Quit;
+		this->status = GameStatus::Quit;
 	} else if (ch == 'R') {
 		restart();
 	}
@@ -114,9 +114,9 @@ void Game2048::draw()
 			 "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
 	mvprintw(2 * Game2048::N + 3, 12 + 5 * (Game2048::N - 4) / 2, "archlizix");
 
-	if (status == GameStatus::Win) {
+	if (this->status == GameStatus::Win) {
 		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
-	} else if (status == GameStatus::Fail) {
+	} else if (this->status == GameStatus::Fail) {
 		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
 	}
 }
@@ -151,7 +151,7 @@ bool Game2048::move_left()
 					data[i][current_write_pos] = last_value * 2;
 					last_value = 0;
 					if (data[i][current_write_pos] == this->Target) {
-						status = GameStatus::Win;
+						this->status = GameStatus::Win;
 					}
 				} else {
 					data[i][current_write_pos] = last_value;
@@ -217,7 +217,7 @@ void Game2048::restart()
 	}
 	rand_new();
 	rand_new();
-	status = GameStatus::Normal;
+	this->status = GameStatus::Normal;
 }
 
 bool Game2048::rand_new()
