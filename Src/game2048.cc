@@ -14,8 +14,8 @@ Game2048::Game2048()
 	noecho(); //按键不回显
 	curs_set(0); //隐藏光标
 	srand(time(NULL)); //随机数
-	this->status = GameStatus::normal;
-	setTestData();
+	this->status = GameStatus::Normal;
+	set_test_data();
 
 	system("clear");
 	mvprintw(LINES / 3, COLS / 3, "GAME BEGIN");
@@ -36,50 +36,50 @@ Game2048::~Game2048()
 	endwin(); //ncurses清理
 }
 
-GameStatus Game2048::getStatus()
+GameStatus Game2048::get_status()
 {
 	return status;
 }
 
-void Game2048::processInput()
+void Game2048::process_input()
 {
 	char ch = getch();
 	if (ch >= 'a' && ch <= 'z') {
 		ch -= 32;
 	}
-	if (status == GameStatus::normal) {
+	if (status == GameStatus::Normal) {
 		bool updated = false;
 		if (ch == 'A') {
-			updated = moveLeft();
+			updated = move_left();
 		} else if (ch == 'S') {
 			// 向下移动 = 旋转270度，向左移动，再旋转90度
 			rotate();
 			rotate();
 			rotate();
-			updated = moveLeft();
+			updated = move_left();
 			rotate();
 		} else if (ch == 'D') {
 			rotate();
 			rotate();
-			updated = moveLeft();
+			updated = move_left();
 			rotate();
 			rotate();
 		} else if (ch == 'W') {
 			rotate();
-			updated = moveLeft();
+			updated = move_left();
 			rotate();
 			rotate();
 			rotate();
 		}
 		if (updated) {
-			randNew();
-			if (isOver()) {
-				status = GameStatus::fail;
+			rand_new();
+			if (is_over()) {
+				status = GameStatus::Fail;
 			}
 		}
 	}
 	if (ch == 'Q') {
-		status = GameStatus::quit;
+		status = GameStatus::Quit;
 	} else if (ch == 'R') {
 		restart();
 	}
@@ -94,18 +94,18 @@ void Game2048::draw()
 	for (int i = 0; i <= Game2048::N; ++i) {
 		for (int j = 0; j <= Game2048::N; ++j) {
 			// 相交点
-			drawItem(i * 2, 1 + j * Game2048::WIDTH + offset, '+');
+			draw_item(i * 2, 1 + j * Game2048::WIDTH + offset, '+');
 			// 竖线
 			if (i != Game2048::N) {
-				drawItem(i * 2 + 1, 1 + j * Game2048::WIDTH + offset, '|');
+				draw_item(i * 2 + 1, 1 + j * Game2048::WIDTH + offset, '|');
 			}
 			// 横线
 			for (int k = 1; j != Game2048::N && k < Game2048::WIDTH; ++k) {
-				drawItem(i * 2, 1 + j * Game2048::WIDTH + k + offset, '-');
+				draw_item(i * 2, 1 + j * Game2048::WIDTH + k + offset, '-');
 			}
 			// 每个格子里的数
 			if (i != Game2048::N && j != Game2048::N) {
-				drawNum(i * 2 + 1, (j + 1) * Game2048::WIDTH + offset, data[i][j]);
+				draw_num(i * 2 + 1, (j + 1) * Game2048::WIDTH + offset, data[i][j]);
 			}
 		}
 	}
@@ -114,14 +114,14 @@ void Game2048::draw()
 			 "W(UP),S(DOWN),A(LEFT),D(RIGHT),R(RESTART),Q(QUIT)");
 	mvprintw(2 * Game2048::N + 3, 12 + 5 * (Game2048::N - 4) / 2, "archlizix");
 
-	if (status == GameStatus::win) {
+	if (status == GameStatus::Win) {
 		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU WIN,PRESS R TO CONTINUE ");
-	} else if (status == GameStatus::fail) {
+	} else if (status == GameStatus::Fail) {
 		mvprintw(Game2048::N, 5 * Game2048::N / 2 - 1, " YOU LOSE,PRESS R TO CONTINUE ");
 	}
 }
 
-void Game2048::setTestData()
+void Game2048::set_test_data()
 {
 	for (int i = 0; i < Game2048::N; ++i) {
 		for (int j = 0; j < Game2048::N; ++j) {
@@ -131,38 +131,38 @@ void Game2048::setTestData()
 }
 
 // 向左边移动, 返回值表示盘面是否有发生变化
-bool Game2048::moveLeft()
+bool Game2048::move_left()
 {
 	int tmp[Game2048::N][Game2048::N];
 	for (int i = 0; i < Game2048::N; ++i) {
 		// 逐行处理
 		// 如果两个数字一样，当前可写入的位置
-		int currentWritePos = 0;
-		int lastValue = 0;
+		int current_write_pos = 0;
+		int last_value = 0;
 		for (int j = 0; j < Game2048::N; ++j) {
 			tmp[i][j] = data[i][j];
 			if (data[i][j] == 0) {
 				continue;
 			}
-			if (lastValue == 0) {
-				lastValue = data[i][j];
+			if (last_value == 0) {
+				last_value = data[i][j];
 			} else {
-				if (lastValue == data[i][j]) {
-					data[i][currentWritePos] = lastValue * 2;
-					lastValue = 0;
-					if (data[i][currentWritePos] == this->Target) {
-						status = GameStatus::win;
+				if (last_value == data[i][j]) {
+					data[i][current_write_pos] = last_value * 2;
+					last_value = 0;
+					if (data[i][current_write_pos] == this->Target) {
+						status = GameStatus::Win;
 					}
 				} else {
-					data[i][currentWritePos] = lastValue;
-					lastValue = data[i][j];
+					data[i][current_write_pos] = last_value;
+					last_value = data[i][j];
 				}
-				++currentWritePos;
+				++current_write_pos;
 			}
 			data[i][j] = 0;
 		}
-		if (lastValue != 0) {
-			data[i][currentWritePos] = lastValue;
+		if (last_value != 0) {
+			data[i][current_write_pos] = last_value;
 		}
 	}
 	// 看看是否发生了变化
@@ -192,7 +192,7 @@ void Game2048::rotate()
 	}
 }
 
-bool Game2048::isOver()
+bool Game2048::is_over()
 {
 	for (int i = 0; i < Game2048::N; ++i) {
 		for (int j = 0; j < Game2048::N; ++j) {
@@ -215,44 +215,44 @@ void Game2048::restart()
 			data[i][j] = 0;
 		}
 	}
-	randNew();
-	randNew();
-	status = GameStatus::normal;
+	rand_new();
+	rand_new();
+	status = GameStatus::Normal;
 }
 
-bool Game2048::randNew()
+bool Game2048::rand_new()
 {
-	std::vector<int>emptyPos;
+	std::vector<int>empty_pos;
 	// 把空位置先存起来
 	for (int i = 0; i < Game2048::N; ++i) {
 		for (int j = 0; j < Game2048::N; ++j) {
 			if (data[i][j] == 0) {
-				emptyPos.push_back(i * Game2048::N + j);
+				empty_pos.push_back(i * Game2048::N + j);
 			}
 		}
 	}
-	if (emptyPos.size() == 0) {
+	if (empty_pos.size() == 0) {
 		return false;
 	}
 	// 随机找个空位置
-	int value = emptyPos[rand() % emptyPos.size()];
+	int value = empty_pos[rand() % empty_pos.size()];
 	// 10%的概率产生4
 	data[value / Game2048::N][value % Game2048::N] = rand() % 10 == 1 ? 4 : 2;
 	return true;
 }
 
 // 左上角为（0，0），在指定的位置画一个字符
-void Game2048::drawItem(int row, int col, char c)
+void Game2048::draw_item(int row, int col, char c)
 {
 	move(row, col);
 	addch(c);
 }
 
 // 游戏里的数字是右对齐，row, col是数字最后一位所在的位置
-void Game2048::drawNum(int row, int col, int num)
+void Game2048::draw_num(int row, int col, int num)
 {
 	while (num > 0) {
-		drawItem(row, col, num % 10 + '0');
+		draw_item(row, col, num % 10 + '0');
 		num /= 10;
 		--col;
 	}

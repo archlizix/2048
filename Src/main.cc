@@ -6,8 +6,8 @@ int main()
 
 	do {
 		game.draw();
-		game.processInput();
-	} while (GameStatus::quit != game.getStatus());
+		game.process_input();
+	} while (GameStatus::Quit != game.get_status());
 
 	return 0;
 }

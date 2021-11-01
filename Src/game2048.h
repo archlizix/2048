@@ -1,10 +1,10 @@
 #pragma once
 
 enum class GameStatus {
-	fail = 0,
-	win,
-	normal,
-	quit,
+	Fail = 0,
+	Win,
+	Normal,
+	Quit,
 };
 
 class Game2048
@@ -15,18 +15,18 @@ public:
 	static constexpr int WIDTH = 5; //每个格子的字符长度
 	Game2048();
 	~Game2048();
-	GameStatus getStatus();
-	void processInput();
+	GameStatus get_status();
+	void process_input();
 	void draw();
-	void setTestData();
+	void set_test_data();
 private:
 	int data[Game2048::N][Game2048::N];
 	GameStatus status;
-	bool moveLeft();
+	bool move_left();
 	void rotate();
-	bool isOver();
+	bool is_over();
 	void restart();
-	bool randNew();
-	void drawItem(int row, int col, char c);
-	void drawNum(int row, int col, int num);
+	bool rand_new();
+	void draw_item(int row, int col, char c);
+	void draw_num(int row, int col, int num);
 };
