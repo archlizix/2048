@@ -32,10 +32,24 @@ public:
 		srand(time(NULL)); //随机数
 		this->status = game_status::normal;
 		setTestData();
+
+		system("clear");
+		mvprintw(LINES / 3, COLS / 3, "GAME BEGIN");
+		mvprintw(LINES / 3 + 1, COLS / 3, "Press any key to entry...");
+		refresh();
+
+		getch();
 	}
 
 	~Game2048()
 	{
+		system("clear");
+		mvprintw(LINES / 3, COLS / 3, "GAME END");
+		mvprintw(LINES / 3 + 1, COLS / 3, "Press any key to leave...");
+		refresh();
+
+		getch();
+
 		endwin(); //ncurses清理
 	}
 
