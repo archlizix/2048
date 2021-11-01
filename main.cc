@@ -23,9 +23,20 @@ enum class game_status {
 class Game2048
 {
 public:
-	Game2048(): status(game_status::normal)
+	Game2048()
 	{
+		initscr(); //ncurses初始化
+		cbreak(); //按键不需要输入回车直接交互
+		noecho(); //按键不回显
+		curs_set(0); //隐藏光标
+		srand(time(NULL)); //随机数
+		this->status = game_status::normal;
 		setTestData();
+	}
+
+	~Game2048()
+	{
+		endwin(); //ncurses清理
 	}
 
 	game_status getStatus()
@@ -37,7 +48,6 @@ public:
 	void processInput()
 	{
 		char ch = getch();
-		// 转化成大写
 		if (ch >= 'a' && ch <= 'z') {
 			ch -= 32;
 		}
@@ -259,30 +269,8 @@ private:
 	}
 };
 
-void initialize()
-{
-	// ncurses初始化
-	initscr();
-	// 按键不需要输入回车直接交互
-	cbreak();
-	// 按键不显示
-	noecho();
-	// 隐藏光标
-	curs_set(0);
-	// 随机数
-	srand(time(NULL));
-}
-
-void shutdown()
-{
-	// ncurses清理
-	endwin();
-}
-
 int main()
 {
-	initialize();
-
 	Game2048 game;
 
 	do {
@@ -290,6 +278,5 @@ int main()
 		game.processInput();
 	} while (game_status::quit != game.getStatus());
 
-	shutdown();
 	return 0;
 }
