@@ -5,8 +5,6 @@
 #include <ctime>
 #include <curses.h>
 
-using namespace std;
-
 // 格子数
 constexpr int N = 4;
 // 每个格子的字符长度
@@ -225,7 +223,7 @@ private:
 	// 随机产生一个新的数字
 	bool randNew()
 	{
-		vector<int>emptyPos;
+		std::vector<int>emptyPos;
 		// 把空位置先存起来
 		for (int i = 0; i < N; ++i) {
 			for (int j = 0; j < N; ++j) {
