@@ -130,7 +130,12 @@ void Game2048::set_test_data()
 	}
 }
 
-// 向左边移动, 返回值表示盘面是否有发生变化
+/*!
+    \brief  向左移动
+
+    \return true 盘面发生变化
+    \return false 盘面没有发生变化
+*/
 bool Game2048::move_left()
 {
 	int tmp[Game2048::N][Game2048::N];
@@ -176,7 +181,9 @@ bool Game2048::move_left()
 	return false;
 }
 
-// 矩阵逆时针旋转90度
+/*!
+    \brief 矩阵逆时针旋转90度
+*/
 void Game2048::rotate()
 {
 	int tmp[Game2048::N][Game2048::N] = {0};
@@ -241,14 +248,23 @@ bool Game2048::rand_new()
 	return true;
 }
 
-// 左上角为（0，0），在指定的位置画一个字符
+/*!
+    \brief 在指定位置画一个字符，(0,0)在左上角
+*/
 void Game2048::draw_item(int row, int col, char c)
 {
 	move(row, col);
 	addch(c);
 }
 
-// 游戏里的数字是右对齐，row, col是数字最后一位所在的位置
+
+/*!
+    \brief 画一个右对齐的数字
+
+    \param row 数字最后一位所在行
+    \param col 数字最后一位所在列
+    \param num 数字
+*/
 void Game2048::draw_num(int row, int col, int num)
 {
 	while (num > 0) {
