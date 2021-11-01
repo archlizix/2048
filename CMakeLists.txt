@@ -7,7 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
-add_executable(2048 Src/main.cc)
+include_directories(${CMAKE_SOURCE_DIR}/Src)
+
+aux_source_directory(${CMAKE_SOURCE_DIR}/Src srcs)
+
+add_executable(
+	2048
+	${srcs}
+)
 
 find_package(Curses)
 if(CURSES_FOUND)
